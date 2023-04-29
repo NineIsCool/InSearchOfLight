@@ -12,6 +12,13 @@ public class menu : MonoBehaviour
         SceneManager.LoadScene("1");
     }
 
+    public void PlayNewGame()
+    {
+        PlayerPrefs.DeleteAll();
+        DataContainer.checkpointIndex = 0;
+        SceneManager.LoadScene("1");
+    }
+
     public void Exit()
     {
         Application.Quit();

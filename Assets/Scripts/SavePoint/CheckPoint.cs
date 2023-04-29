@@ -11,6 +11,10 @@ public class CheckPoint : MonoBehaviour
     void Awake()
     {
         player = GameObject.Find("Player").transform;
+        if (PlayerPrefs.HasKey("startSavePos"))
+        {
+            DataContainer.checkpointIndex = PlayerPrefs.GetInt("startSavePos");
+        }
         if (DataContainer.checkpointIndex == indexCheckP)
         {
             player.position = transform.position;
@@ -21,6 +25,8 @@ public class CheckPoint : MonoBehaviour
     {
         if (collision.CompareTag("Player") && indexCheckP>DataContainer.checkpointIndex)
         {
+            PlayerPrefs.SetInt("startSavePos", indexCheckP);
+            PlayerPrefs.Save();
             DataContainer.checkpointIndex = indexCheckP;
         } 
     }
