@@ -5,18 +5,12 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public float speed;
-    public int health;
 
     public float positionPatrol;
     public Transform point;
     public bool movingRight = true;
 
     public float stoppingDistance;
-
-    private float timeBtwAttack;
-    public float startTimeBtwAttack;
-
-    public int damage;
 
     private float stopTime;
     public float startStopTime;
@@ -27,13 +21,16 @@ public class Enemy : MonoBehaviour
     private Animator anim;
     private Player gamePlayer;
 
+
     private bool chill = false;
     private bool angry = false;
     private bool goBack = false;
 
+    private bool die = false;
 
     void Start()
     {
+
         gamePlayer = FindObjectOfType<Player>();
         player = GameObject.FindGameObjectWithTag("Player").transform;
         rb = GetComponent<Rigidbody2D>();
@@ -43,52 +40,47 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        if (stopTime <= 0)
+        if (!die)
         {
-            speed = normalSpeed;
-        }
-        else
-        {
-            speed = 0;
-            stopTime -= Time.deltaTime;
-        }
+            if (stopTime <= 0)
+            {
+                speed = normalSpeed;
+            }
+            else
+            {
+                speed = 0;
+                stopTime -= Time.deltaTime;
+            }
+            if (Vector2.Distance(transform.position, point.position) < positionPatrol && angry == false)
+            {
+                chill = true;
+            }
 
-        if (health <= 0)
-        {
-            Die();
-            Destroy(gameObject);
-        }
-        if (Vector2.Distance(transform.position, point.position) < positionPatrol && angry == false)
-        {
-            chill = true;
-        }
+            if (Vector2.Distance(transform.position, player.position) < stoppingDistance && Vector2.Distance(transform.position, player.position) != 0)
+            {
+                angry = true;
+                chill = false;
+                goBack = false;
+            }
 
-        if (Vector2.Distance(transform.position, player.position) < stoppingDistance && Vector2.Distance(transform.position, player.position)!=0)
-        {
-            angry = true;
-            chill = false;
-            goBack = false;
-        }
+            if (Vector2.Distance(transform.position, player.position) > stoppingDistance || Vector2.Distance(transform.position, player.position) == 0)
+            {
+                goBack = true;
+                angry = false;
+            }
 
-        if (Vector2.Distance(transform.position, player.position) > stoppingDistance || Vector2.Distance(transform.position, player.position) == 0)
-        {
-            goBack = true;
-            angry = false;
-        }
-
-        
-
-        if (chill)
-        {
-            Chill();
-        }
-        else if (angry)
-        {
-            Angry();
-        }
-        else if (goBack)
-        {
-            GoBack();
+            if (chill)
+            {
+                Chill();
+            }
+            else if (angry)
+            {
+                Angry();
+            }
+            else if (goBack)
+            {
+                GoBack();
+            }
         }
     }
 
@@ -143,15 +135,21 @@ public class Enemy : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, point.position, speed * Time.deltaTime);
     }
 
-    public void TakeDamage(int damage)
+    private IEnumerator Die()
     {
-        stopTime = startStopTime;
-        health -= damage;
+        anim.SetTrigger("IsDeath");
+        yield return new WaitForSeconds(anim.GetCurrentAnimatorStateInfo(0).length);
+        Destroy(gameObject);
     }
 
-    private void Die()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        rb.bodyType = RigidbodyType2D.Static;
-        anim.SetTrigger("IsDeath");
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            die = true;
+            gameObject.tag = "NoInteractions";
+            rb.bodyType = RigidbodyType2D.Static;
+            StartCoroutine(Die());
+        }
     }
 }

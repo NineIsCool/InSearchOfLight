@@ -5,4 +5,5 @@ using UnityEngine;
 public static class DataContainer 
 {
     public static int checkpointIndex;
+    public static bool isPlayM;
 }
