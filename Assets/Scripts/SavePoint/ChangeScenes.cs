@@ -11,7 +11,7 @@ public class ChangeScenes : MonoBehaviour
     {
         if (indexCheck == PlayerPrefs.GetInt("startSavePos"))
         {
-            scene1.SetActive(true);
+            scene1.SetActive(false);
             scene2.SetActive(true);
         }
         else

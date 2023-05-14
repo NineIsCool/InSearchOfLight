@@ -10,7 +10,7 @@ public class TextWritingEffect : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player") && indexCheckP > DataContainer.checkpointIndex)
+        if (collision.CompareTag("Player") && indexCheckP != DataContainer.checkpointIndex)
         {
             anim.SetTrigger("StartTxt");
         }
